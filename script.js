@@ -10,17 +10,17 @@ window.onload = function() {
 
 function updateOptions(changedId, otherId1, otherId2) {
     const selectedValue = document.getElementById(changedId).value;
-    
+
     const options = ["Mazury", "Podlasie", "Tatry"];
-    
-    const updateSelect = (selectId, excludedValue) => {
+
+    const updateSelect = (selectId, excludedValues) => {
         const selectElement = document.getElementById(selectId);
         const currentValue = selectElement.value;
-        
+
         selectElement.innerHTML = "";
-        
+
         options.forEach(option => {
-            if (option !== excludedValue) {
+            if (!excludedValues.includes(option)) {
                 const optionElement = document.createElement("option");
                 optionElement.value = option;
                 optionElement.textContent = option;
@@ -32,8 +32,11 @@ function updateOptions(changedId, otherId1, otherId2) {
         });
     };
 
-    updateSelect(otherId1, selectedValue);
-    updateSelect(otherId2, selectedValue);
+    const otherValue1 = document.getElementById(otherId1).value;
+    const otherValue2 = document.getElementById(otherId2).value;
+
+    updateSelect(otherId1, [selectedValue, otherValue2]);
+    updateSelect(otherId2, [selectedValue, otherValue1]);
 }
 
 function submitVotes() {
