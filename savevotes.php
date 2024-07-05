@@ -1,8 +1,8 @@
 <?php
 
 // Połączenie z bazą danych
-$servername = "localhost";
-$username = "dudzior";
+$servername = "127.0.0.1";
+$username = "dudzior@127.0.0.1";
 $password = "Azul123"; // Ustaw swoje hasło
 $dbname = "ankieta_db"; // Ustaw nazwę swojej bazy danych
 
