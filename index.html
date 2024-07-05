@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,56 +7,65 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Ankieta: Wybierz swoje ulubione miejsce w Polsce</h1>
-    <form id="surveyForm">
-        <label for="firstChoice">Pierwszy wybór:</label>
-        <select id="firstChoice" onchange="updateOptions('firstChoice', 'secondChoice', 'thirdChoice')">
-            <option value="Mazury">Mazury</option>
-            <option value="Podlasie">Podlasie</option>
-            <option value="Tatry">Tatry</option>
-        </select>
-        <br>
-
-        <label for="secondChoice">Drugi wybór:</label>
-        <select id="secondChoice" onchange="updateOptions('secondChoice', 'firstChoice', 'thirdChoice')">
-            <option value="Mazury">Mazury</option>
-            <option value="Podlasie">Podlasie</option>
-            <option value="Tatry">Tatry</option>
-        </select>
-        <br>
-
-        <label for="thirdChoice">Trzeci wybór:</label>
-        <select id="thirdChoice" onchange="updateOptions('thirdChoice', 'firstChoice', 'secondChoice')">
-            <option value="Mazury">Mazury</option>
-            <option value="Podlasie">Podlasie</option>
-            <option value="Tatry">Tatry</option>
-        </select>
-        <br>
-
-        <button type="button" onclick="submitVotes()">Wyślij głosy</button>
-    </form>
-
-    <h2>Podsumowanie wyników</h2>
-    <table id="summaryTable">
-        <tr>
-            <th>Opcja</th>
-            <th>Punkty</th>
-        </tr>
-    </table>
-
-    <h2>Wyniki</h2>
-    <table id="resultsTable">
-        <thead>
+    <div class="background-image"></div>
+    <div class="container">
+        <h1>Ankieta</h1>
+        <table id="summaryTable">
             <tr>
-                <th>Imię</th>
-                <th>Wybrana opcja</th>
+                <th>Opcja</th>
                 <th>Punkty</th>
             </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-
+        </table>
+        <form id="surveyForm">
+            <label for="firstChoice">Pierwszy wybór (3 pkt):</label>
+            <select id="firstChoice" onchange="updateOptions('firstChoice', 'secondChoice', 'thirdChoice')">
+                <option value="Mazury">Mazury</option>
+                <option value="Podlasie">Podlasie</option>
+                <option value="Tatry">Tatry</option>
+            </select>
+            <br>
+            <label for="secondChoice">Drugi wybór (2 pkt):</label>
+            <select id="secondChoice" onchange="updateOptions('secondChoice', 'firstChoice', 'thirdChoice')">
+                <option value="Mazury">Mazury</option>
+                <option value="Podlasie">Podlasie</option>
+                <option value="Tatry">Tatry</option>
+            </select>
+            <br>
+            <label for="thirdChoice">Trzeci wybór (1 pkt):</label>
+            <select id="thirdChoice" onchange="updateOptions('thirdChoice', 'firstChoice', 'secondChoice')">
+                <option value="Mazury">Mazury</option>
+                <option value="Podlasie">Podlasie</option>
+                <option value="Tatry">Tatry</option>
+            </select>
+            <br>
+            <button type="button" onclick="submitVotes()">Zatwierdź głosy</button>
+            <button type="button" onclick="clearVotes()">Wyczyść głosy</button>
+        </form>
+        <h2>Wyniki</h2>
+        <div class="scrollable-table">
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>Imię</th>
+                        <th>Opcja</th>
+                        <th>Punkty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Tutaj będą dynamicznie wstawiane wiersze -->
+                </tbody>
+            </table>
+        </div>
+    </div>
     <script src="script.js"></script>
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                userName = prompt("Jak masz na imię?");
+                loadResults();
+                updateSummary();
+            }, 500);
+        };
+    </script>
 </body>
 </html>
