@@ -58,69 +58,87 @@ async function submitVotes() {
         { name: userName, choice: thirdChoice, points: 1 }
     ];
 
-    for (const result of results) {
-        await fetch('http://localhost:3000/results', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(result)
-        });
-    }
+    try {
+        for (const result of results) {
+            await fetch('http://localhost:3000/results', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(result)
+            });
+        }
 
-    updateSummary();
-    loadResults(); // Update the results table after submitting the votes
+        updateSummary();
+        loadResults(); // Update the results table after submitting the votes
+    } catch (error) {
+        console.error('Error submitting votes:', error);
+    }
 }
 
 async function updateSummary() {
-    const response = await fetch('http://localhost:3000/results');
-    const results = await response.json();
+    try {
+        const response = await fetch('http://localhost:3000/results');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const results = await response.json();
 
-    const summaryTable = document.getElementById('summaryTable');
-    summaryTable.innerHTML = `
-        <tr>
-            <th>Opcja</th>
-            <th>Punkty</th>
-        </tr>
-    `;
+        const summaryTable = document.getElementById('summaryTable');
+        summaryTable.innerHTML = `
+            <tr>
+                <th>Opcja</th>
+                <th>Punkty</th>
+            </tr>
+        `;
 
-    let summary = {
-        'Mazury': 0,
-        'Podlasie': 0,
-        'Tatry': 0
-    };
+        let summary = {
+            'Mazury': 0,
+            'Podlasie': 0,
+            'Tatry': 0
+        };
 
-    results.forEach(result => {
-        summary[result.choice] += result.points;
-    });
+        results.forEach(result => {
+            summary[result.choice] += result.points;
+        });
 
-    let sortable = [];
-    for (let option in summary) {
-        sortable.push([option, summary[option]]);
+        let sortable = [];
+        for (let option in summary) {
+            sortable.push([option, summary[option]]);
+        }
+
+        sortable.sort((a, b) => b[1] - a[1]);
+
+        sortable.forEach(item => {
+            const newRow = summaryTable.insertRow();
+            newRow.insertCell(0).textContent = item[0];
+            newRow.insertCell(1).textContent = item[1];
+        });
+    } catch (error) {
+        console.error('Error updating summary:', error);
     }
-
-    sortable.sort((a, b) => b[1] - a[1]);
-
-    sortable.forEach(item => {
-        const newRow = summaryTable.insertRow();
-        newRow.insertCell(0).textContent = item[0];
-        newRow.insertCell(1).textContent = item[1];
-    });
 }
 
 async function loadResults() {
-    const response = await fetch('http://localhost:3000/results');
-    const results = await response.json();
+    try {
+        const response = await fetch('http://localhost:3000/results');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const results = await response.json();
 
-    const resultsTable = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
-    resultsTable.innerHTML = ''; // Clear existing rows
+        const resultsTable = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
+        resultsTable.innerHTML = ''; // Clear existing rows
 
-    results.forEach(result => {
-        const newRow = resultsTable.insertRow();
-        newRow.insertCell(0).textContent = result.name;
-        newRow.insertCell(1).textContent = result.choice;
-        newRow.insertCell(2).textContent = result.points;
-    });
+        results.forEach(result => {
+            const newRow = resultsTable.insertRow();
+            newRow.insertCell(0).textContent = result.name;
+            newRow.insertCell(1).textContent = result.choice;
+            newRow.insertCell(2).textContent = result.points;
+        });
+    } catch (error) {
+        console.error('Error loading results:', error);
+    }
 }
 
 function clearVotes() {
