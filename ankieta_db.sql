@@ -1,0 +1,6 @@
+CREATE TABLE votes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    choice VARCHAR(50) NOT NULL,
+    points INT NOT NULL
+);
