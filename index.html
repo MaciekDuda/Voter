@@ -58,5 +58,14 @@
         </div>
     </div>
     <script src="script.js"></script>
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                userName = prompt("Jak masz na imię?");
+                loadResults();
+                updateSummary();
+            }, 500);
+        };
+    </script>
 </body>
 </html>

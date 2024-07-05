@@ -13,6 +13,14 @@ function updateOptions(changedId, otherId1, otherId2) {
 
     const options = ["Mazury", "Podlasie", "Tatry"];
 
+    const getSelectedValues = () => {
+        return [
+            document.getElementById('firstChoice').value,
+            document.getElementById('secondChoice').value,
+            document.getElementById('thirdChoice').value
+        ];
+    };
+
     const updateSelect = (selectId, excludedValues) => {
         const selectElement = document.getElementById(selectId);
         const currentValue = selectElement.value;
@@ -20,7 +28,7 @@ function updateOptions(changedId, otherId1, otherId2) {
         selectElement.innerHTML = "";
 
         options.forEach(option => {
-            if (!excludedValues.includes(option)) {
+            if (!excludedValues.includes(option) || option === currentValue) {
                 const optionElement = document.createElement("option");
                 optionElement.value = option;
                 optionElement.textContent = option;
@@ -32,61 +40,41 @@ function updateOptions(changedId, otherId1, otherId2) {
         });
     };
 
-    const otherValue1 = document.getElementById(otherId1).value;
-    const otherValue2 = document.getElementById(otherId2).value;
+    const selectedValues = getSelectedValues();
 
-    updateSelect(otherId1, [selectedValue, otherValue2]);
-    updateSelect(otherId2, [selectedValue, otherValue1]);
+    updateSelect('firstChoice', selectedValues.filter((val, idx) => idx !== 0));
+    updateSelect('secondChoice', selectedValues.filter((val, idx) => idx !== 1));
+    updateSelect('thirdChoice', selectedValues.filter((val, idx) => idx !== 2));
 }
 
-function submitVotes() {
+async function submitVotes() {
     const firstChoice = document.getElementById('firstChoice').value;
     const secondChoice = document.getElementById('secondChoice').value;
     const thirdChoice = document.getElementById('thirdChoice').value;
 
-    const resultsTable = document.getElementById('resultsTable');
+    const results = [
+        { name: userName, choice: firstChoice, points: 3 },
+        { name: userName, choice: secondChoice, points: 2 },
+        { name: userName, choice: thirdChoice, points: 1 }
+    ];
 
-    const newRow1 = resultsTable.insertRow();
-    newRow1.insertCell(0).textContent = userName;
-    newRow1.insertCell(1).textContent = firstChoice;
-    newRow1.insertCell(2).textContent = 3;
-
-    const newRow2 = resultsTable.insertRow();
-    newRow2.insertCell(0).textContent = userName;
-    newRow2.insertCell(1).textContent = secondChoice;
-    newRow2.insertCell(2).textContent = 2;
-
-    const newRow3 = resultsTable.insertRow();
-    newRow3.insertCell(0).textContent = userName;
-    newRow3.insertCell(1).textContent = thirdChoice;
-    newRow3.insertCell(2).textContent = 1;
-
-    saveResults(userName, firstChoice, 3);
-    saveResults(userName, secondChoice, 2);
-    saveResults(userName, thirdChoice, 1);
+    for (const result of results) {
+        await fetch('http://localhost:3000/results', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(result)
+        });
+    }
 
     updateSummary();
 }
 
-function saveResults(name, choice, points) {
-    let results = JSON.parse(localStorage.getItem('results')) || [];
-    results.push({name: name, choice: choice, points: points});
-    localStorage.setItem('results', JSON.stringify(results));
-}
+async function updateSummary() {
+    const response = await fetch('http://localhost:3000/results');
+    const results = await response.json();
 
-function loadResults() {
-    const resultsTable = document.getElementById('resultsTable');
-    let results = JSON.parse(localStorage.getItem('results')) || [];
-    
-    results.forEach(result => {
-        const newRow = resultsTable.insertRow();
-        newRow.insertCell(0).textContent = result.name;
-        newRow.insertCell(1).textContent = result.choice;
-        newRow.insertCell(2).textContent = result.points;
-    });
-}
-
-function updateSummary() {
     const summaryTable = document.getElementById('summaryTable');
     summaryTable.innerHTML = `
         <tr>
@@ -95,7 +83,6 @@ function updateSummary() {
         </tr>
     `;
 
-    let results = JSON.parse(localStorage.getItem('results')) || [];
     let summary = {
         'Mazury': 0,
         'Podlasie': 0,
@@ -117,6 +104,21 @@ function updateSummary() {
         const newRow = summaryTable.insertRow();
         newRow.insertCell(0).textContent = item[0];
         newRow.insertCell(1).textContent = item[1];
+    });
+}
+
+async function loadResults() {
+    const response = await fetch('http://localhost:3000/results');
+    const results = await response.json();
+
+    const resultsTable = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
+    resultsTable.innerHTML = ''; // Clear existing rows
+
+    results.forEach(result => {
+        const newRow = resultsTable.insertRow();
+        newRow.insertCell(0).textContent = result.name;
+        newRow.insertCell(1).textContent = result.choice;
+        newRow.insertCell(2).textContent = result.points;
     });
 }
 
