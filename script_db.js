@@ -41,29 +41,37 @@ function submitVotes() {
     const secondChoice = document.getElementById('secondChoice').value;
     const thirdChoice = document.getElementById('thirdChoice').value;
 
-    const resultsTable = document.getElementById('resultsTable');
+    const data = {
+        name: userName,
+        votes: [
+            { choice: firstChoice, points: 3 },
+            { choice: secondChoice, points: 2 },
+            { choice: thirdChoice, points: 1 }
+        ]
+    };
 
-    const newRow1 = resultsTable.insertRow();
-    newRow1.insertCell(0).textContent = userName;
-    newRow1.insertCell(1).textContent = firstChoice;
-    newRow1.insertCell(2).textContent = 3;
-
-    const newRow2 = resultsTable.insertRow();
-    newRow2.insertCell(0).textContent = userName;
-    newRow2.insertCell(1).textContent = secondChoice;
-    newRow2.insertCell(2).textContent = 2;
-
-    const newRow3 = resultsTable.insertRow();
-    newRow3.insertCell(0).textContent = userName;
-    newRow3.insertCell(1).textContent = thirdChoice;
-    newRow3.insertCell(2).textContent = 1;
-
-    saveResults(userName, firstChoice, 3);
-    saveResults(userName, secondChoice, 2);
-    saveResults(userName, thirdChoice, 1);
-
-    updateSummary();
+    fetch('http://localhost:3000/saveVotes', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+        updateSummary(); // Aktualizacja podsumowania po zapisie
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
+
 
 function saveResults(name, choice, points) {
     let results = JSON.parse(localStorage.getItem('results')) || [];
