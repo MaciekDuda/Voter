@@ -69,6 +69,7 @@ async function submitVotes() {
     }
 
     updateSummary();
+    loadResults(); // Update the results table after submitting the votes
 }
 
 async function updateSummary() {
